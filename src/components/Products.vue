@@ -165,7 +165,7 @@ export default {
     const searchInst = instantsearch({
       appId: '00N84365S5',
       apiKey: '3dbe61e6a86b9ba0eed3f941dcd637a4',
-      indexName: 'contacts',
+      indexName: 'products',
       urlSync: true
     })
 
