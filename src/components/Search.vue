@@ -38,8 +38,7 @@ export default {
       products: [],
       crntBrandId: 949,
       brands:[],
-      selected: '',
-      msg: 'Welcome to Your Vue.js PWA'
+      selected: ''
     }
   },
   methods: {

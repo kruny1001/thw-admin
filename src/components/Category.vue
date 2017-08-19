@@ -31,8 +31,7 @@ export default {
   data () {
     return {
       brands: [],
-      baseStoreUrl: 'https://store-0xh7j.mybigcommerce.com/manage/products/categories/',
-      msg: 'Welcome to Your Vue.js PWA'
+      baseStoreUrl: 'https://store-0xh7j.mybigcommerce.com/manage/products/categories/'
     }
   },
   created () {
@@ -45,7 +44,6 @@ export default {
       headers: {'Access-Control-Allow-Origin': '*'}
     })
 
-    
 
     var getProductList = function () {
       return instance.request({

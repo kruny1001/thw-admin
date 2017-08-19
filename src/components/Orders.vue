@@ -5,7 +5,8 @@
      <line-chart
       :chart-data="lineData"
       :options="{responsive: true, maintainAspectRatio: false}"
-      >
+      :height="200"
+      :width="100">
     </line-chart>
     <table>
       <tr>
@@ -65,7 +66,7 @@ export default {
         data:{
           max_date_created:new Date().toISOString(),
           sort:"date_created:desc",
-          limit:200
+          limit:20
         },
         url: '/listOrders'
       }).then(function(response) {

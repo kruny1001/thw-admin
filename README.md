@@ -1,5 +1,7 @@
 # thw-admin
 
+This is admin frontend for top hair wigs
+
 > A Vue.js project
 
 ## Build Setup
