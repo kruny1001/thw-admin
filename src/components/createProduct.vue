@@ -1,103 +1,158 @@
 <template>
   <div class="container">
     <div style="width: 800px;">
-        <h1>[{{prdInfo.id}}] {{prdInfo.name}}</h1>
+      <h1>[{{prdInfo.id}}] {{prdInfo.name}}</h1>
     </div>
-    <pre>
-      Warning
-      If you delete an option value, the related variants will be automatically deleted
-      
-      [Option properties]
-      radio_buttons, 
-      rectangles, 
-      dropdown, 
-      product_list, 
-      product_list_with_images, 
-      swatch
-    </pre>
-    
+    <vue-tabs>
+      <v-tab class="tab" title="None"></v-tab>
+      <v-tab class="tab" title="Product Info">
+        <pre v-if="optionShow" style="height:350px; overflow-y:scroll; font-size:9px; max-width: 450px;">{{prdInfo}}</pre>
+        <h4>Basic Information</h4> Product Detail: <input type="checkbox" v-model="optionShow">
+        <table v-if="tableReady">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Photo</th>
+              <th>Name</th>
+              <th>SKU</th>
+              <th>Weight</th>
+              <th>Categories</th>
+              <th>Price</th>
+              <th>Sale Price</th>
+              <th>Brand_id</th>
+            </tr>
+          </thead>
+          <tbody>
+              <tr style="border:1px solid grey;">
+                <td>{{prdInfo.id}}</td>
+                <td><div style="display:flex-inline;">
+                    <img  v-for='image in prdImgs' :src='image.url_tiny' :key="image.id"/>    
+                </div></td>
+                <td>{{prdInfo.name}}</td>
+                <td>{{prdInfo.sku}}</td>
+                <td>{{prdInfo.weight}}</td>
+                <td>{{prdInfo.categories}}</td>
+                <td>{{prdInfo.price}}</td>
+                <td>{{prdInfo.sale_price}}</td>
+                <td>{{prdInfo.brand_id}}</td>
+              </tr>
+          </tbody>
+        </table>
+        <h4>Description</h4>
+        <div style="border: 1px solid gray; padding: 8px;" v-html="prdInfo.description">
+        </div>
+      </v-tab>
+      <v-tab class="tab" title="Warning Message">
+        <!-- Waring Message -->
+        <pre>
+          Warning
+          If you delete an option value, the related variants will be automatically deleted
+          
+          [Option properties]
+          radio_buttons, 
+          rectangles, 
+          dropdown, 
+          product_list, 
+          product_list_with_images, 
+          swatch
+        </pre>
+      </v-tab>
+    </vue-tabs>
 
-    <pre v-if="optionShow" style="height:350px; overflow-y:scroll; font-size:9px; max-width: 450px;">{{prdInfo}}</pre>
-    
-    <h4>Basic Information</h4> Product Detail: <input type="checkbox" v-model="optionShow">
-    <table v-if="tableReady">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Photo</th>
-          <th>Name</th>
-          <th>SKU</th>
-          <th>Weight</th>
-          <th>Categories</th>
-          <th>Price</th>
-          <th>Sale Price</th>
-          <th>Brand_id</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr style="border:1px solid grey;">
-            <td>{{prdInfo.id}}</td>
-            <td><div style="display:flex-inline;">
-                <img  v-for="image in prdImgs" :src="image.url_tiny">    
-            </div></td>
-            <td>{{prdInfo.name}}</td>
-            <td>{{prdInfo.sku}}</td>
-            <td>{{prdInfo.weight}}</td>
-            <td>{{prdInfo.categories}}</td>
-            <td>{{prdInfo.price}}</td>
-            <td>{{prdInfo.sale_price}}</td>
-            <td>{{prdInfo.brand_id}}</td>
-          </tr>
-      </tbody>
-    </table>
-    <h4>Description</h4>
-    <div style="border: 1px solid gray; padding: 8px;" v-html="prdInfo.description">
-    </div>
-    <hr />
-    
+    <!-- Product Information -->
     <div style="font-weight:bold">Options</div>
-    
-    <section class="flexcontainer">
-      <div v-for="(ocn, idx) in optionsColor" @click="addOptionValue(ocn, optionsColorImg[idx])">
-        <div class="ocn">{{ocn}}</div> 
-        <img :src="optionsColorImg[idx]">
-      </div>
-    </section>
-    <button @click="createOption()"> Create Color Option </button>
-    
-    <pre v-if="optionShow" style="height:350px; overflow-y:scroll; font-size:9px; max-width: 450px;">{{options}}</pre>
-    <div v-for="optionElement in options">
-      <div style="font-weight:bold;">Possible Options, 
-        Option ID: {{optionElement.id}}, Product ID: {{optionElement.product_id}}
-      </div>
-      <button @click="deleteOptionById(optionElement.product_id, optionElement.id)">Delete </button>
-      <!-- 
-      <div>
-        <multiselect v-model="selected" :options="optionsColor"></multiselect>
-        <input type="checkbox">
-      </div>
-      -->
-      <div class="container">
+
+    <section style="padding: 10px; border:1px solid gray">
+      <h4> Create Option </h4>
+      <pre>{{crntOption}}</pre>
+      <fieldset>
+      <legend>Basic Information:</legend>
+        <label>Name</label><input type="text" v-model="crntOption.name"> <br/>
+        <label>Display Name</label><input type="text" v-model="crntOption.display_name"> <br/>
+        <label>Type</label>
+        <select v-on:change="onChangeCrntOptionType()" v-model="crntOption.type">
+          <option selected> Select Option Type </option>
+          <option v-for="typeElement in optionTypes" :key="typeElement.label" v-bind:value="typeElement.value">{{ typeElement.label }}</option>
+        </select> <br/>
+      </fieldset>
+      
+
+      <section v-if="crntOption.type == 'swatch'" class="flexcontainer">
+        <div v-for="(ocn, idx) in optionsColor" :key="ocn" 
+          @click="addOptionValue(ocn, optionsColorImg[idx])">
+          <div class="ocn">{{ocn}}</div> 
+          <img :src="optionsColorImg[idx]">
+        </div>
+      </section>
+
+      <section v-if="crntOption.type == 'radio_buttons'" class="flexcontainer">
+        <div v-for="(ocn, idx) in optionsLength" :key="ocn" 
+          @click="addOptionValueLength(ocn, optionsColorImg[idx])">
+          <div class="ocn">{{ocn}}</div> 
+          <img :src="optionsColorImg[idx]">
+        </div>
+      </section>
+
+      <section v-if="crntOption.type == 'radio_button'" class="flexcontainer">
+        <!-- <input type="text" v-for="radioB in crntRadios" v-model="radioB" /> -->
+      </section>
+
+      <!-- <section v-if="crntOption.option_values.length > 1" style="border:1px solid gray;">
         <transition-group name="fade" tag="div" v-dragula="optionElement.option_values" drake="optionElement.option_values">
-          <div v-if="item.type=='swatch'" class="item" v-for="(item, index) in optionElement.option_values" :key="item.id">
+            <div v-if="item.type=='swatch'" class="item" v-for="(item, index) in crntOption.option_values" :key="item.id">
+              <div>[{{item.id}}] </br>{{item.label}}</div>
+              <img style="width:30px; height:30px;" :src="item.value_data.image_url">
+            </div>  
+        </transition-group>
+        <transition-group name="fade" tag="div" v-dragula="optionElement.option_values" drake="optionElement.option_values">
+          <div v-if="item.type!='radio_buttons'" class="item" v-for="(item, index) in optionElement.option_values" :key="item.id">
             <div>[{{item.id}}] </br>{{item.label}}</div>
-            <img style="width:30px; height:30px;" :src="item.value_data.image_url">
           </div>  
         </transition-group>
-      </div>
+      </section> -->
+      <button @click="createOption()"> Create Color Option </button>
+    </section>
+    
+    
+    <pre v-if="optionShow" style="height:350px; overflow-y:scroll; font-size:9px; max-width: 450px;">{{options}}</pre>
 
+
+
+    <section v-for="optionElement in options" :key="optionElement.id">
+      <div style="font-weight:bold;">Possible Options, Option ID: {{optionElement.id}}, Product ID: {{optionElement.product_id}}</div>
+      <transition-group name="fade" tag="div" v-dragula="optionElement.option_values" drake="optionElement.option_values">
+        <div v-if="optionElement.type=='swatch'" class="item" v-for="(item, index) in optionElement.option_values" :key="item.id">
+          <div>[{{item.id}}] </br>{{item.label}}</div>
+          <img style="width:30px; height:30px;" :src="item.value_data.image_url" />
+        </div>  
+        <div v-if="optionElement.type=='radio_buttons'" class="item" v-for="(item, index) in optionElement.option_values" :key="item.id">
+          <div>[{{item.id}}] </br>{{item.label}}</div>
+        </div>  
+      </transition-group>
+      <button @click="deleteOptionById(optionElement.product_id, optionElement.id)">Delete </button>
+      <button @click="updateOption(optionElement.product_id, optionElement)">Update </button>
+      
       <pre v-if="optionShow" style="background:gray; height:350px; overflow-y:scroll; font-size:9px; max-width: 450px;">
         {{optionElement.option_values}}
       </pre>
-      
       <pre v-if="optionShow" style="background:gray; height:350px; overflow-y:scroll; font-size:9px; max-width: 450px;">
         {{optionCandidate}}
       </pre>
-    </div>
+    </section>
     <hr />
     <h4>Variants</h4>
+    <button @click="createVariants()"> Create Variants </button>
+    <div v-for="variant in variants">
+      <div>
+        <span>{{variant.id}} : </span>
+        <span v-for="opt in variant.option_values">{{opt.label}}</span>
+        <span> Price:  <input v-model="variant.calculated_price" type="Number"></span>
+        <span> Weight: <input v-model="variant.calculated_weight" type="Number"></span>
+      </div>
+    </div>
+    <button @click="updateVariants(variants)"> update Variants</button>
     <p>You can craete variants after setting all your possible options</p>
-    <div v-for="variant in variants"></div>
+    <div v-for="variant in variants" :key="variant.id"></div>
     <div>Price Rule</div>
     <hr />
   </div>
@@ -108,6 +163,7 @@
   import axios from 'axios'
   import Multiselect from 'vue-multiselect'
   import { Vue2Dragula } from 'vue2-dragula'
+  import { uniqBy } from 'lodash'
 
   export default {
     name: 'Create',
@@ -118,6 +174,10 @@
     },
     data () {
       return {
+        variants: [],
+        optionsLength: ['8"', '10"', '12"'],
+        optionTypes: [{value: 'swatch', label:'Color'}, {value:'radio_buttons', label:'Length'}],
+        crntOption: {name:"", display_name:"", option_values:[], sort_order:-1, type: ""},
         tableReady: false,
         productCols: [{labe:'ID', field:'id'},{labe:'Name', field:'name'},
           {labe:'SKU', field:'sku'},{labe:'Weight', field:'weight'},{labe:'Categories', field:'categories'},
@@ -128,7 +188,7 @@
         optionCandidate: [],
         selected: null,
         optionsColor: [
-          "1", "BLACK", "1B", "2", "3", "4", "6", "8", "27", "30", "33", "34", "44", "51", "60", "130", "144", "280", "350", "530", "613", "99J", "NATURAL", "NATURAL/DK", 
+          "1", "BLACK", "1B", "2", "3", "4", "6", "8", "27", "30", "33", "34", "44", "51", "60", "130", "144", "280", "350", "530", "613", "99J", "NATURAL", "NATURAL/DK", "T33", "T530"
           // "M99J530", "M430", "M2730",
           // "PBBLBK", "PBCARAMEL", "PBCINNAMON", "PBCOFFEE", "PBDKGN", "PBDKPU",
           // "KM27", "KM30", "KM530",
@@ -182,7 +242,9 @@
           "http://www.modelmodelhair.com/Content/cache/ColorImage_856_crop_67_100_90_ffffff__13___000000__15__3082762__0_0_0_0.jpg",
           "http://www.modelmodelhair.com/Content/cache/ColorImage_859_crop_67_100_90_ffffff__13___000000__15__3446926__0_0_0_0.jpg",
           "http://www.modelmodelhair.com/Content/cache/ColorImage_862_crop_67_100_90_ffffff__13___000000__15__36372__0_0_0_0.jpg",
-          "http://www.modelmodelhair.com/Content/cache/ColorImage_863_crop_67_100_90_ffffff__13___000000__15__30372__0_0_0_0.jpg"
+          "http://www.modelmodelhair.com/Content/cache/ColorImage_863_crop_67_100_90_ffffff__13___000000__15__30372__0_0_0_0.jpg",
+          "http://www.modelmodelhair.com/Content/cache/ColorImage_1162_crop_67_100_90_ffffff__13___000000__15__3292962__0_0_0_0.jpg",
+          "http://www.modelmodelhair.com/Content/cache/ColorImage_1170_crop_67_100_90_ffffff__13___000000__15__137923__0_0_0_0.jpg"
         ],
         productObj: {
           type:"physical",
@@ -201,48 +263,200 @@
       }
     },
     methods:{
-      addOptionValue: function(label, imgSrc){
-        // need to be unique 
+      updateVariants: function(targetVariants) {
         var vm = this;
-        var index = vm.optionCandidate.length
+        console.log(targetVariants)
+        targetVariants.forEach(variant => {
+          let upodateObj = {
+            calculated_price: variant.calculated_price,
+            price: variant.calculated_price,
+            cost_price: variant.calculated_price,
+            calculated_weight: variant.calculated_weight,
+            weight: variant.calculated_weight,
+            image_url: variant.image_url
+          }
+          this.instance.request({
+                method: 'put',
+                data: upodateObj,
+                url: 'updateVariants/'+variant.product_id+'/'+variant.id
+          }).then(function(response) {
+            console.log(response)
+            return(response)
+          })
+        })
+      },
+      createVariants : function() {
+        // when create Variants must be delete all variants 
+        var vm = this;
+        var targetId = vm.productId
+        var count = 0;
+        if(vm.options.length == 2) {
+          vm.options[0].option_values.forEach(op1 => {
+            vm.options[1].option_values.forEach(op2 => {
+              count++
+              op1.option_id = vm.options[0].id
+              op2.option_id = vm.options[1].id
+              let variantBody = {
+                "cost_price": 0,
+                "sku":  targetId.toString() + String(count),
+                "price": 0,
+                "weight": 0,
+                "image_url":"",
+                "purchasing_disabled": false,
+                "purchasing_disabled_message": "",
+                "upc": "",
+                "inventory_level": 0,
+                "inventory_warning_level": 0,
+                "bin_picking_number": "",
+                "product_id": targetId,
+                "option_values": [
+                  op1, op2
+                ]
+              }
+              console.log(op1, op2)
+              return this.instance.request({
+                method: 'post',
+                data: variantBody,
+                url: 'createVariant/'+targetId
+                  }).then(function(response) {
+                    console.log(response)
+                    return(response)
+                  }).catch(function (error) {
+                    if (error.response) {
+                    // The request was made and the server responded with a status code 
+                    // that falls out of the range of 2xx 
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                    } else if (error.request) {
+                    // The request was made but no response was received 
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of 
+                    // http.ClientRequest in node.js 
+                    console.log(error.request);
+                    } else {
+                    // Something happened in setting up the request that triggered an Error 
+                    console.log('Error', error.message);
+                    }
+                    console.log(error.config);
+                })
+            })
+          })
+        } else if(vm.options.length == 1){
+          vm.options[0].option_values.forEach(op1 => {
+              count++
+              op1.option_id = vm.options[0].id
+              let variantBody = {
+                "cost_price": 0,
+                "sku":  targetId.toString() + String(count),
+                "price": 0,
+                "weight": 0,
+                "image_url":"",
+                "purchasing_disabled": false,
+                "purchasing_disabled_message": "",
+                "upc": "",
+                "inventory_level": 0,
+                "inventory_warning_level": 0,
+                "bin_picking_number": "",
+                "product_id": targetId,
+                "option_values": [
+                  op1
+                ]
+              }
+              return this.instance.request({
+                method: 'post',
+                data: variantBody,
+                url: 'createVariant/'+targetId
+                  }).then(function(response) {
+                    console.log(response)
+                    return(response)
+                  }).catch(function (error) {
+                    if (error.response) {
+                    // The request was made and the server responded with a status code 
+                    // that falls out of the range of 2xx 
+                    console.log(error.response.data);
+                    console.log(error.response.status);
+                    console.log(error.response.headers);
+                    } else if (error.request) {
+                    // The request was made but no response was received 
+                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of 
+                    // http.ClientRequest in node.js 
+                    console.log(error.request);
+                    } else {
+                    // Something happened in setting up the request that triggered an Error 
+                    console.log('Error', error.message);
+                    }
+                    console.log(error.config);
+                })
+            })
+        }
+      },
+      getVariantsByProductId: function(targetId){
+        return this.instance.request({
+        method: 'get',
+        url: 'getVariantsByProductId/'+targetId
+          }).then(function(response) {
+            return(response)
+          }).catch(function (error) {
+            if (error.response) {
+            // The request was made and the server responded with a status code 
+            // that falls out of the range of 2xx 
+            console.log(error.response.data);
+            console.log(error.response.status);
+            console.log(error.response.headers);
+            } else if (error.request) {
+            // The request was made but no response was received 
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of 
+            // http.ClientRequest in node.js 
+            console.log(error.request);
+            } else {
+            // Something happened in setting up the request that triggered an Error 
+            console.log('Error', error.message);
+            }
+            console.log(error.config);
+        })
+      },
+      onChangeCrntOptionType: function(){
+        var vm=this;
+        if(vm.crntOption.type == 'swatch'){
+          vm.crntOption.name = "Color"
+          vm.crntOption.display_name = "Color"
+        }
+        else{
+          vm.crntOption.name = "Length"
+          vm.crntOption.display_name = "Length"
+        }
+        
+      },
+      updateOption: function(prdId, optionObj ){
+        console.log(optionObj)
+      },
+      addOptionValueLength: function(label){
+        var vm = this;
+        var index = vm.crntOption.option_values.length
         var optionValue = {
-          label:label, 
+          label:label,
+          sort_order:index, 
+          value_data: {},
+        }
+        vm.crntOption.option_values.push(optionValue)
+        vm.crntOption.option_values = uniqBy(vm.crntOption.option_values, 'label')
+      },
+      addOptionValue: function(label, imgSrc){
+        var vm = this;
+        var index = vm.crntOption.option_values.length
+        var optionValue = {
+          label:label,
           sort_order:index, 
           value_data: {
             "image_url": imgSrc
           },
         }
-        vm.optionCandidate.push(optionValue)
+        vm.crntOption.option_values.push(optionValue)
+        vm.crntOption.option_values = uniqBy(vm.crntOption.option_values, 'label')
       },
       createOption: function(){
-        let optionName =  "Color 2nd Choice"
-        let optionNameDisplay = "Color 2nd Choice"
-        var vm = this; 
-        var nuna = [{color: "1", img: "https://image.samsbeauty.com/common/colorimages/1_M.jpg"},
-          {color: "1B", img: "https://image.samsbeauty.com/common/colorimages/1B_M.jpg"},
-          {color: "612", img: "https://image.samsbeauty.com/common/colorimages/612_M.jpg"},
-          {color: "M214", img: "https://image.samsbeauty.com/common/colorimages/M2-4_M.jpg"},
-          {color: "NDX2565", img: "https://image.samsbeauty.com/common/colorimages/NDX2565_M.jpg"},
-          {color: "NDX2633", img: "https://image.samsbeauty.com/common/colorimages/NDX2633_M.jpg"},
-          {color: "NDXBLUEBERRY", img: "https://image.samsbeauty.com/common/colorimages/NDXBLUEBERRY_M.jpg"},
-          {color: "NDXBURG", img: "https://image.samsbeauty.com/common/colorimages/NDXBURG_M.jpg"},
-          {color: "NDXRED", img: "https://image.samsbeauty.com/common/colorimages/NDXRED_M.jpg"},
-          {color: "P1B/30", img: "https://image.samsbeauty.com/common/colorimages/P1B30_M.jpg"}]
-        let body ={
-            "product_id": vm.productId,
-            "name": optionName,
-            "display_name" : optionNameDisplay,
-            "type": "swatch",
-            "option_values" : [
-                {
-                  label:label, 
-                  sort_order:index, 
-                  value_data: {
-                    "image_url": imgSrc
-                  }
-                }
-            ]
-        }
+        var vm = this
+        let body =vm.crntOption
 
         var baseURL = 'http://localhost:3001/api/'
         var instance = axios.create({
@@ -256,9 +470,10 @@
           url: 'createOption/'+vm.productId
           }).then(function(response) {
             return(response)
-          })
+        })
       },
-      deleteOptionById: function(prdId, optionId){
+      
+      deleteOptionById: function(prdId, optionId) {
         var vm = this;
         var baseURL = 'http://localhost:3001/api/'
         var instance = axios.create({
@@ -271,8 +486,9 @@
           url: 'deleteOptionById/'+vm.productId+'/'+optionId
           }).then(function(response) {
             return(response)
-          })  
+        })  
       },
+
       getProductList: function (targetId) {
         return this.instance.request({
           method: 'get',
@@ -324,15 +540,13 @@
         })
       }
     },
-    watch: {
-    },
     created () {
       const $service = this.$dragula.$service
-      // $service.options('items', {direction: 'vertical'})
+      //$service.options('items', {direction: 'vertical'})
       //$service.eventBus.$on('drop', (args) => console.log(args)) //
       var vm = this;
-      var targetId = 15040 //14825
-      vm.productId = 15040; //14825
+      var targetId = 10952 //14825
+      vm.productId = 10952; //14825
       var baseURL = 'http://localhost:3001/api/'
 
       vm.instance = axios.create({
@@ -349,12 +563,19 @@
         vm.prdInfo = res.data.info
         vm.tableReady = true;
       })
+      vm.getVariantsByProductId(targetId).then(function(res){
+        vm.variants = res.data.data;
+      })
     }
   }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style>
+  .tab{
+    padding: 10px; 
+    background: rgba(128, 128, 128, 0.2);
+  }
   .gu-mirror {
   position: absolute;
   pointer-events: none;

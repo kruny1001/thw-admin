@@ -9,6 +9,9 @@ import Customers from '@/components/Customers'
 import Orders from '@/components/Orders'
 import Search from '@/components/Search'
 import CreateProduct from '@/components/CreateProduct'
+import Color from '@/components/Color'
+import AddColor from '@/components/AddColor'
+
 Vue.use(Router)
 
 export default new Router({
@@ -62,6 +65,16 @@ export default new Router({
       path: '/create',
       name: 'Create',
       component: CreateProduct
+    },
+    {
+      path: '/color',
+      name: 'Color',
+      component: Color
+    },
+    {
+      path: '/colorEdit',
+      name: 'AddColor',
+      component: AddColor
     }
   ]
 })
