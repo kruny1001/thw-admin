@@ -1,7 +1,7 @@
 <template>
   <div id="app">
     <header>
-      <span>Top Hair Wigs Admin</span>
+      <router-link to="/"><span>Top Hair Wigs Admin</span></router-link>
     </header>
     <main>
       <router-view></router-view>
@@ -33,20 +33,23 @@ main {
 
 header {
   margin: 0;
-  height: 56px;
+  height: 32px;
   padding: 0 16px 0 24px;
   background-color: #35495E;
   color: #ffffff;
 }
 
 header span {
-  display: block;
-  position: relative;
-  font-size: 20px;
-  line-height: 1;
-  letter-spacing: .02em;
-  font-weight: 400;
-  box-sizing: border-box;
-  padding-top: 16px;
+    display: block;
+    position: relative;
+    font-size: 12px;
+    line-height: 1;
+    letter-spacing: .02em;
+    font-weight: 400;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-top: 9px;
+    color:white;
+    font-weight: bold;
 }
 </style>

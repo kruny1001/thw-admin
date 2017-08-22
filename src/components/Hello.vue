@@ -1,6 +1,10 @@
 <template>
   <div class="hello">
+    <router-link to="/orders">Orders</router-link>
     <router-link to="/products">Product List</router-link>
+    <router-link to="/search">Search</router-link>
+    <router-link to="/create">Create</router-link>
+    <router-link to="/doc">Document</router-link>
   </div>
 </template>
 

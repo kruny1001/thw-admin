@@ -1,5 +1,7 @@
 <template>
   <div class="container">
+    <input type="text" v-model="productId">
+    <button @click="refreshPrd(productId)"> Refresh </button>
     <div style="width: 800px;">
       <h1>[{{prdInfo.id}}] {{prdInfo.name}}</h1>
     </div>
@@ -142,10 +144,10 @@
     <hr />
     <h4>Variants</h4>
     <button @click="createVariants()"> Create Variants </button>
-    <div v-for="variant in variants">
+    <div v-for="(variant, idx) in variants" :key="idx">
       <div>
-        <span>{{variant.id}} : </span>
-        <span v-for="opt in variant.option_values">{{opt.label}}</span>
+        <span>[{{idx}}] {{variant.id}} : </span>
+        <span v-for="opt in variant.option_values">{{opt.label}}:</span>
         <span> Price:  <input v-model="variant.calculated_price" type="Number"></span>
         <span> Weight: <input v-model="variant.calculated_weight" type="Number"></span>
       </div>
@@ -175,7 +177,7 @@
     data () {
       return {
         variants: [],
-        optionsLength: ['8"', '10"', '12"'],
+        optionsLength: ['8"', '10s', '10"','12"', '14"', '16"', '18"'],
         optionTypes: [{value: 'swatch', label:'Color'}, {value:'radio_buttons', label:'Length'}],
         crntOption: {name:"", display_name:"", option_values:[], sort_order:-1, type: ""},
         tableReady: false,
@@ -188,7 +190,10 @@
         optionCandidate: [],
         selected: null,
         optionsColor: [
-          "1", "BLACK", "1B", "2", "3", "4", "6", "8", "27", "30", "33", "34", "44", "51", "60", "130", "144", "280", "350", "530", "613", "99J", "NATURAL", "NATURAL/DK", "T33", "T530"
+          "1", "BLACK", "1B", "2", "3", "4", "6", "8", "27", "30", "33", "34", "44", "51", "60", "130", "144", "280", "350", "530", "613", "99J", "NATURAL", "NATURAL/DK", "T33", "T530",
+          "P1B/27", "P1B/30", "P1B/33", "P4/30","T1B/27",,"T1B/BG"
+
+
           // "M99J530", "M430", "M2730",
           // "PBBLBK", "PBCARAMEL", "PBCINNAMON", "PBCOFFEE", "PBDKGN", "PBDKPU",
           // "KM27", "KM30", "KM530",
@@ -244,7 +249,14 @@
           "http://www.modelmodelhair.com/Content/cache/ColorImage_862_crop_67_100_90_ffffff__13___000000__15__36372__0_0_0_0.jpg",
           "http://www.modelmodelhair.com/Content/cache/ColorImage_863_crop_67_100_90_ffffff__13___000000__15__30372__0_0_0_0.jpg",
           "http://www.modelmodelhair.com/Content/cache/ColorImage_1162_crop_67_100_90_ffffff__13___000000__15__3292962__0_0_0_0.jpg",
-          "http://www.modelmodelhair.com/Content/cache/ColorImage_1170_crop_67_100_90_ffffff__13___000000__15__137923__0_0_0_0.jpg"
+          "http://www.modelmodelhair.com/Content/cache/ColorImage_1170_crop_67_100_90_ffffff__13___000000__15__137923__0_0_0_0.jpg",
+          "http://www.modelmodelhair.com/Content/cache/ColorImage_1065_crop_67_100_90_ffffff__13___000000__15__3093657__0_0_0_0.jpg",
+          "http://www.modelmodelhair.com/Content/cache/ColorImage_1066_crop_67_100_90_ffffff__13___000000__15__99583__0_0_0_0.jpg",
+          "http://www.modelmodelhair.com/Content/cache/ColorImage_1067_crop_67_100_90_ffffff__13___000000__15__2184838__0_0_0_0.jpg",
+          "http://www.modelmodelhair.com/Content/cache/ColorImage_1084_crop_67_100_90_ffffff__13___000000__15__98429__0_0_0_0.jpg",
+          "https://sep.yimg.com/ay/yhst-2519492840586/t1b-27-18.gif",
+          "https://sep.yimg.com/ay/yhst-2519492840586/t1b-bg-17.gif"
+
         ],
         productObj: {
           type:"physical",
@@ -290,6 +302,8 @@
         var vm = this;
         var targetId = vm.productId
         var count = 0;
+        console.log(vm.options)
+        
         if(vm.options.length == 2) {
           vm.options[0].option_values.forEach(op1 => {
             vm.options[1].option_values.forEach(op2 => {
@@ -298,7 +312,7 @@
               op2.option_id = vm.options[1].id
               let variantBody = {
                 "cost_price": 0,
-                "sku":  targetId.toString() + String(count),
+                "sku":  targetId.toString()+count.toString(),
                 "price": 0,
                 "weight": 0,
                 "image_url":"",
@@ -313,13 +327,24 @@
                   op1, op2
                 ]
               }
-              console.log(op1, op2)
+              
+              var myJSONString = JSON.stringify(variantBody);
+              variantBody = myJSONString.replace(/\\n/g, "\\n")
+                                      .replace(/\\'/g, "\\'")
+                                      .replace(/\\"/g, '\\"')
+                                      .replace(/\\&/g, "\\&")
+                                      .replace(/\\r/g, "\\r")
+                                      .replace(/\\t/g, "\\t")
+                                      .replace(/\\b/g, "\\b")
+                                      .replace(/\\f/g, "\\f")
+              variantBody = JSON.parse(variantBody)
+              console.log(variantBody.sku)
               return this.instance.request({
                 method: 'post',
                 data: variantBody,
                 url: 'createVariant/'+targetId
                   }).then(function(response) {
-                    console.log(response)
+                    // console.log(response)
                     return(response)
                   }).catch(function (error) {
                     if (error.response) {
@@ -364,28 +389,28 @@
               }
               return this.instance.request({
                 method: 'post',
-                data: variantBody,
+                data:variantBody,
                 url: 'createVariant/'+targetId
                   }).then(function(response) {
-                    console.log(response)
+                    
                     return(response)
                   }).catch(function (error) {
-                    if (error.response) {
-                    // The request was made and the server responded with a status code 
-                    // that falls out of the range of 2xx 
-                    console.log(error.response.data);
-                    console.log(error.response.status);
-                    console.log(error.response.headers);
-                    } else if (error.request) {
-                    // The request was made but no response was received 
-                    // `error.request` is an instance of XMLHttpRequest in the browser and an instance of 
-                    // http.ClientRequest in node.js 
-                    console.log(error.request);
-                    } else {
-                    // Something happened in setting up the request that triggered an Error 
-                    console.log('Error', error.message);
-                    }
-                    console.log(error.config);
+                    // if (error.response) {
+                    // // The request was made and the server responded with a status code 
+                    // // that falls out of the range of 2xx 
+                    // console.log(error.response.data);
+                    // console.log(error.response.status);
+                    // console.log(error.response.headers);
+                    // } else if (error.request) {
+                    // // The request was made but no response was received 
+                    // // `error.request` is an instance of XMLHttpRequest in the browser and an instance of 
+                    // // http.ClientRequest in node.js 
+                    // console.log(error.request);
+                    // } else {
+                    // // Something happened in setting up the request that triggered an Error 
+                    // console.log('Error', error.message);
+                    // }
+                    // console.log(error.config);
                 })
             })
         }
@@ -461,7 +486,7 @@
         var baseURL = 'http://localhost:3001/api/'
         var instance = axios.create({
           baseURL: baseURL,
-          timeout: 1000,
+          timeout: 10000,
           headers: {'Access-Control-Allow-Origin': '*'}
         })
         instance.request({
@@ -478,7 +503,7 @@
         var baseURL = 'http://localhost:3001/api/'
         var instance = axios.create({
           baseURL: baseURL,
-          timeout: 1000,
+          timeout: 10000,
           headers: {'Access-Control-Allow-Origin': '*'}
         })
         instance.request({
@@ -538,6 +563,21 @@
             }
             console.log(error.config);
         })
+      },
+      refreshPrd: function(productId){
+        var vm = this;
+        vm.getOptions(productId).then(res => {
+          vm.options = res.data.data
+          vm.optionMeta = res.data.meta
+        })
+        vm.getProductList(productId).then(function(res){
+          vm.prdImgs = res.data.imgs
+          vm.prdInfo = res.data.info
+          vm.tableReady = true;
+        })
+        vm.getVariantsByProductId(productId).then(function(res){
+          vm.variants = res.data.data;
+        })
       }
     },
     created () {
@@ -545,13 +585,13 @@
       //$service.options('items', {direction: 'vertical'})
       //$service.eventBus.$on('drop', (args) => console.log(args)) //
       var vm = this;
-      var targetId = 10952 //14825
-      vm.productId = 10952; //14825
+      var targetId = 10186 //14825
+      vm.productId = 10186; //14825
       var baseURL = 'http://localhost:3001/api/'
 
       vm.instance = axios.create({
         baseURL: baseURL,
-        timeout: 1000,
+        timeout: 10000,
         headers: {'Access-Control-Allow-Origin': '*'}
       })
       vm.getOptions(targetId).then(res => {
@@ -565,6 +605,8 @@
       })
       vm.getVariantsByProductId(targetId).then(function(res){
         vm.variants = res.data.data;
+        vm.variants = _.orderBy(vm.variants, ["sku"])
+        console.log(vm.variants)
       })
     }
   }

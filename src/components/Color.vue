@@ -101,10 +101,10 @@ export default {
     var hitTemplate =
     '<div class="hit media">' +
         '<div class="media-left">' +
-        '<div class="media-object" style="    background-size: cover; width: 125px; height: 125px; background-image: url(\'{{img}}\');"></div>' +
-        '</div>' +
+        '<div class="media-object" style="background-size: cover; width: 125px; height: 125px; background-image: url(\'{{img}}\');"></div></div>' +
         '<div class="media-body">' +
-        '<h4 class="media-heading">{{{_highlightResult.id}}} {{#stars}}<span class="ais-star-rating--star{{^.}}__empty{{/.}}"></span>{{/stars}}</h4>' +
+        '<h4 class="media-heading">{{name}}</h4>' +
+        '<a href="https://store-0xh7j.mybigcommerce.com/manage/products/{{id}}/edit" target="_blank"> {{id}} </a>'+
         '<p class="year">{{year}}</p><p class="genre">{{#genre}}<span class="badge">{{.}}</span> {{/genre}}</p>' +
         '</div>' +
     '</div>';
