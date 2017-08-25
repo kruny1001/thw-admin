@@ -1,18 +1,17 @@
 <template>
   <div>
-      
-         <label>Makers</label>
-         <select v-model="makerSelected">
-              <option selected value="mm">Model Model</option>
-                <option value="eq"> Equal </option>
-        </select><br>
-        <label>Color Name</label> <input type="text" v-model="crntColorObj.name"> <br>
-      <label>ImgURL</label> <input type="text" v-model="crntColorObj.imgUrl"><br>
+    <label>Makers</label>
+    <select v-model="makerSelected">
+        <option selected value="mm">Model Model</option>
+        <option value="eq"> Equal </option>
+    </select><br>
+    <label>Color Name</label> <input type="text" v-model="crntColorObj.name"> <br>
+    <label>ImgURL</label> <input type="text" v-model="crntColorObj.imgUrl"><br>
     <button @click="updateColor(makerSelected, crntColorObj)"> Add </button>
     <section class="flexcontainer">
         <div class="ocn" v-for="color in colors" :key="color.name">
             <div>{{color.name}}</div>
-            <img :src="color.imgUrl" alt="">
+            <img style="max-width:67px;" :src="color.imgUrl" alt="">
         </div>
     </section>
   </div>

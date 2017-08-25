@@ -36,14 +36,12 @@ export default {
   },
   created () {
     var vm = this;
-    var baseURL = 'http://localhost:3001/api/'
-
+    var baseURL = 'http://localhost138.197.126.0:3000/api/'
     var instance = axios.create({
       baseURL: baseURL,
       timeout: 1000,
       headers: {'Access-Control-Allow-Origin': '*'}
     })
-
 
     var getProductList = function () {
       return instance.request({

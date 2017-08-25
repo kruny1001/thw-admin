@@ -482,8 +482,8 @@
       createOption: function(){
         var vm = this
         let body =vm.crntOption
-
-        var baseURL = 'http://localhost:3001/api/'
+        var baseURL = 'http://138.197.126.0:3000/api/'
+        //var baseURL = 'http://localhost:3000/api/'
         var instance = axios.create({
           baseURL: baseURL,
           timeout: 10000,
@@ -500,7 +500,8 @@
       
       deleteOptionById: function(prdId, optionId) {
         var vm = this;
-        var baseURL = 'http://localhost:3001/api/'
+        var baseURL = 'http://138.197.126.0:3000/api/'
+        //var baseURL = 'http://localhost:3000/api/'
         var instance = axios.create({
           baseURL: baseURL,
           timeout: 10000,
@@ -585,9 +586,10 @@
       //$service.options('items', {direction: 'vertical'})
       //$service.eventBus.$on('drop', (args) => console.log(args)) //
       var vm = this;
-      var targetId = 10186 //14825
-      vm.productId = 10186; //14825
-      var baseURL = 'http://localhost:3001/api/'
+      var targetId = 10629 //14825
+      vm.productId = 10629; //14825
+      var baseURL = 'http://138.197.126.0:3000/api/'
+      //var baseURL = 'http://localhost:3000/api/'
 
       vm.instance = axios.create({
         baseURL: baseURL,

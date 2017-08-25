@@ -2,38 +2,18 @@
   <div class="container">
     <h3>Product List</h3>
 
-
-    <div id="current-refined-values">
-      <!-- CurrentRefinedValues widget will appear here -->
-    </div>
-
-    <div id="clear-all">
-      <!-- ClearAll widget will appear here -->
-    </div>
-    <div id="refinement-list">
-      <!-- RefinementList widget will appear here -->
-    </div>
-    <div id="search-box">
-      <!-- SearchBox widget will appear here -->
-    </div>
-    <div id="hits">
-      <!-- Hits widget will appear here -->
-    </div>
-    <div id="pagination">
-      <!-- Pagination widget will appear here -->
-    </div>
-
     <select v-model="selected" @change="selectProduct(selected)">
       <option disabled value="">Please select Brand</option>
-      <option v-for="option in brands" v-bind:value="option.id">
+      <option v-for="(option, idx) in brands" :key="idx" v-bind:value="option.id">
         {{ option.name }} - {{option.id}}
       </option>
     </select>
     <table>
-    <div class="record" v-for="(prd, index) in products">  
+    <div class="record" v-for="(prd, index) in products" :key="index">  
       <tr class="table-record">
           <th>ID</th>
           <th>Name</th>
+          
           <th>Calculated Price</th>
           <th>Weight</th>
           <th>availability</th>
@@ -41,6 +21,7 @@
           <th> Actual Link </th>
           <th> Edit Viwe</th>
           <th> Detail View</th>
+          
       </tr>
       <tr class="table-record">
             <td><a target="_blank" v-bind:href="baseStoreUrl + prd.id +'/edit'">{{prd.id}}</a></td>
@@ -55,10 +36,12 @@
       </tr>
         <!-- <div style="padding: 8px; border:1px solid black; border-radius:3px; overflow-x:auto;" v-html="prd.description"></div> -->
       <div  style="padding: 8px; border:1px solid black; border-radius:3px; overflow-x:auto;">
-
+          <label>Category</label>
+          <div><span style="font-size:12px;">{{prd.categories}}</span></div>
           <label>weight: </label><input type="number" v-model="prd.weight" placeholder="edit name">
            <div>{{ prd.weight*16}}o.z</div>
           <hr />
+          <button @click="updateProduct(prd.id, prd)"> Update</button>
 
       </div>
     </div>
@@ -70,7 +53,6 @@
 /* eslint-disable */
 import axios from 'axios'
 import Router from '../router'
-import instantsearch from 'instantsearch.js'
 
 export default {
   name: 'Products',
@@ -158,72 +140,87 @@ export default {
             }
             console.log(error.config);
       })
+    },
+    updateProduct: function(productId, productObj){
+      var vm = this;
+      let upodateObj = productObj
+      this.instance.request({
+            method: 'put',
+            data: upodateObj,
+            url: 'updateProduct/'+productId
+      }).then(function(response) {
+        console.log(response)
+        return(response)
+      })
+        
     }
   },
   mounted(){
-    const searchInst = instantsearch({
-      appId: '00N84365S5',
-      apiKey: '3dbe61e6a86b9ba0eed3f941dcd637a4',
-      indexName: 'products',
-      urlSync: true
-    })
 
-    searchInst.addWidget(
-      instantsearch.widgets.currentRefinedValues({
-        container: '#current-refined-values',
-        // This widget can also contain a clear all link to remove all filters,
-        // we disable it in this example since we use `clearAll` widget on its own.
-        clearAll: false
-      })
-    );
+    // const searchInst = instantsearch({
+    //   appId: '00N84365S5',
+    //   apiKey: '3dbe61e6a86b9ba0eed3f941dcd637a4',
+    //   indexName: 'products',
+    //   urlSync: true
+    // })
 
-    // initialize clearAll
-    searchInst.addWidget(
-      instantsearch.widgets.clearAll({
-        container: '#clear-all',
-        templates: {
-          link: 'Reset everything'
-        },
-        autoHideContainer: false
-      })
-    );
+    // searchInst.addWidget(
+    //   instantsearch.widgets.currentRefinedValues({
+    //     container: '#current-refined-values',
+    //     // This widget can also contain a clear all link to remove all filters,
+    //     // we disable it in this example since we use `clearAll` widget on its own.
+    //     clearAll: false
+    //   })
+    // );
 
-    // initialize pagination
-    searchInst.addWidget(
-      instantsearch.widgets.pagination({
-        container: '#pagination',
-        maxPages: 20,
-        // default is to scroll to 'body', here we disable this behavior
-        scrollTo: false
-      })
-    );
-    // initialize RefinementList
-    searchInst.addWidget(
-      instantsearch.widgets.refinementList({
-        container: '#refinement-list',
-        attributeName: 'category'
-      })
-    );
+    // // initialize clearAll
+    // searchInst.addWidget(
+    //   instantsearch.widgets.clearAll({
+    //     container: '#clear-all',
+    //     templates: {
+    //       link: 'Reset everything'
+    //     },
+    //     autoHideContainer: false
+    //   })
+    // );
 
-    searchInst.addWidget(
-      instantsearch.widgets.searchBox({
-        container: '#search-box',
-        placeholder: 'Search for products'
-      })
-    );
+    // // initialize pagination
+    // searchInst.addWidget(
+    //   instantsearch.widgets.pagination({
+    //     container: '#pagination',
+    //     maxPages: 20,
+    //     // default is to scroll to 'body', here we disable this behavior
+    //     scrollTo: false
+    //   })
+    // );
+    // // initialize RefinementList
+    // searchInst.addWidget(
+    //   instantsearch.widgets.refinementList({
+    //     container: '#refinement-list',
+    //     attributeName: 'category'
+    //   })
+    // );
 
-    // initialize hits widget
-    searchInst.addWidget(
-      instantsearch.widgets.hits({
-        container: '#hits'
-      })
-    );
+    // searchInst.addWidget(
+    //   instantsearch.widgets.searchBox({
+    //     container: '#search-box',
+    //     placeholder: 'Search for products'
+    //   })
+    // );
 
-    searchInst.start()
+    // // initialize hits widget
+    // searchInst.addWidget(
+    //   instantsearch.widgets.hits({
+    //     container: '#hits'
+    //   })
+    // );
+
+    // searchInst.start()
   },
   created () {
     var vm = this;
-    vm.baseURL = 'http://localhost:3001/api/'
+    vm.baseURL = 'http://138.197.126.0:3000/api/'
+    //vm.baseURL = 'http://localhost:3000/api/'
 
     vm.instance = axios.create({
       baseURL: vm.baseURL,

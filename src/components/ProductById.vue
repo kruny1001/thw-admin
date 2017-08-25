@@ -20,7 +20,7 @@
 import axios from 'axios'
 
 export default {
-  name: 'brands',
+  name: 'ProductById',
   data () {
     return {
       productId : this.$route.params.id,      

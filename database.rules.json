@@ -1,0 +1,14 @@
+{
+  "rules": {
+    ".read": true,
+    ".write": true,
+    "products": {
+      "publish": {
+        ".indexOn": [
+          "newArrival",
+          "isMain"
+        ]
+      }
+    }
+  }
+}
