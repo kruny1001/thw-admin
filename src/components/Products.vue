@@ -224,7 +224,7 @@ export default {
 
     vm.instance = axios.create({
       baseURL: vm.baseURL,
-      timeout: 1000,
+      timeout: 10000,
       headers: {'Access-Control-Allow-Origin': '*'}
     })
     if(this.$route.params.id !== undefined){
