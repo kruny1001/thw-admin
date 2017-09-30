@@ -9,11 +9,11 @@
       </option>
     </select>
     <table>
-    <div class="record" v-for="(prd, index) in products" :key="index">  
+    <div class="record" v-for="(prd, index) in products" :key="index">
       <tr class="table-record">
           <th>ID</th>
           <th>Name</th>
-          
+
           <th>Calculated Price</th>
           <th>Weight</th>
           <th>availability</th>
@@ -21,7 +21,7 @@
           <th> Actual Link </th>
           <th> Edit Viwe</th>
           <th> Detail View</th>
-          
+
       </tr>
       <tr class="table-record">
             <td><a target="_blank" v-bind:href="baseStoreUrl + prd.id +'/edit'">{{prd.id}}</a></td>
@@ -76,7 +76,7 @@ export default {
         console.log("update")
         vm.products[idx].editAvail = !vm.products[idx].editAvail
         console.log(vm.products[idx].editAvail)
-      }  
+      }
     },
     selectProduct: function(brandId){
       Router.push({ name: 'ProductsByBrand', params: { id: brandId }})
@@ -95,18 +95,18 @@ export default {
             vm.pageMeta = res.meta
         }).catch(function (error) {
             if (error.response) {
-            // The request was made and the server responded with a status code 
-            // that falls out of the range of 2xx 
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
             console.log(error.response.data);
             console.log(error.response.status);
             console.log(error.response.headers);
             } else if (error.request) {
-            // The request was made but no response was received 
-            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of 
-            // http.ClientRequest in node.js 
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
             console.log(error.request);
             } else {
-            // Something happened in setting up the request that triggered an Error 
+            // Something happened in setting up the request that triggered an Error
             console.log('Error', error.message);
             }
             console.log(error.config);
@@ -121,21 +121,21 @@ export default {
             //console.log(response.data.data)
             console.log(res)
             vm.brands = res.data.data
-            
+
         }).catch(function (error) {
             if (error.response) {
-            // The request was made and the server responded with a status code 
-            // that falls out of the range of 2xx 
+            // The request was made and the server responded with a status code
+            // that falls out of the range of 2xx
             console.log(error.response.data);
             console.log(error.response.status);
             console.log(error.response.headers);
             } else if (error.request) {
-            // The request was made but no response was received 
-            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of 
-            // http.ClientRequest in node.js 
+            // The request was made but no response was received
+            // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
+            // http.ClientRequest in node.js
             console.log(error.request);
             } else {
-            // Something happened in setting up the request that triggered an Error 
+            // Something happened in setting up the request that triggered an Error
             console.log('Error', error.message);
             }
             console.log(error.config);
@@ -152,7 +152,7 @@ export default {
         console.log(response)
         return(response)
       })
-        
+
     }
   },
   mounted(){
@@ -219,7 +219,7 @@ export default {
   },
   created () {
     var vm = this;
-    vm.baseURL = 'http://138.197.126.0:3000/api/'
+    vm.baseURL = 'http://192.241.138.85:3000/api/'
     //vm.baseURL = 'http://localhost:3000/api/'
 
     vm.instance = axios.create({
@@ -229,12 +229,12 @@ export default {
     })
     if(this.$route.params.id !== undefined){
       vm.crntBrandId = this.$route.params.id
-    } 
+    }
     vm.selected = vm.crntBrandId;
     vm.getBrandList(vm.crntBrandId)
     vm.getProductList(vm.crntBrandId)
-    
-    
+
+
   }
 }
 </script>

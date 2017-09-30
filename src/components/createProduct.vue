@@ -6,7 +6,27 @@
       <h1>[{{prdInfo.id}}] {{prdInfo.name}}</h1>
     </div>
     <vue-tabs>
-      <v-tab class="tab" title="None"></v-tab>
+      <v-tab class="tab" title="Add Color Option">
+        <div>Upload image</div>
+        <div class="center">
+        <!--
+              :initial-image="initImg"
+            -->
+          <croppa v-model="myCroppa" 
+            :disable-drag-and-drop="false"
+            :prevent-white-space="true"
+            :width="130"
+            :height="130"
+            initial-size="cover"
+            canvas-color="transparent"></croppa>
+          <button @click="generateImage">Generate</button>
+          <button @click="uploadColorImage">Upload</button>
+          <input v-model="colorName" placeholder="edit me">
+          <img id="genImg" class="output" :src="imgUrl" >
+        </div>
+        <div>Color Name</div>
+        <div>Brand Name</div>
+      </v-tab>
       <v-tab class="tab" title="Product Info">
         <pre v-if="optionShow" style="height:350px; overflow-y:scroll; font-size:9px; max-width: 450px;">{{prdInfo}}</pre>
         <h4>Basic Information</h4> Product Detail: <input type="checkbox" v-model="optionShow">
@@ -44,6 +64,7 @@
         <div style="border: 1px solid gray; padding: 8px;" v-html="prdInfo.description">
         </div>
       </v-tab>
+      
       <v-tab class="tab" title="Warning Message">
         <!-- Waring Message -->
         <pre>
@@ -78,27 +99,32 @@
         </select> <br/>
       </fieldset>
       
-
       <section v-if="crntOption.type == 'swatch'" class="flexcontainer">
-        <div v-for="(ocn, idx) in optionsColor" :key="ocn" 
-          @click="addOptionValue(ocn, optionsColorImg[idx])">
-          <div class="ocn">{{ocn}}</div> 
-          <img :src="optionsColorImg[idx]">
+        <div v-for="(ocn, idx) in optColors" :key="ocn" @click="addOptionValue(ocn.name, ocn.imgSrc)">
+          <div class="ocn">{{ocn.name}}</div> 
+          <img style="width:100px; height:100px;" :src="ocn.imgSrc">
         </div>
       </section>
 
       <section v-if="crntOption.type == 'radio_buttons'" class="flexcontainer">
+      <!-- 
         <div v-for="(ocn, idx) in optionsLength" :key="ocn" 
           @click="addOptionValueLength(ocn, optionsColorImg[idx])">
           <div class="ocn">{{ocn}}</div> 
           <img :src="optionsColorImg[idx]">
+        </div>
+      -->
+
+        <div v-for="(ocn, idx) in optColors" :key="ocn" 
+          @click="addOptionValueLength(ocn, ocn.imgSrc)">
+          <div class="ocn">{{ocn.name}}</div> 
+          <img :src="ocn.imgSrc">
         </div>
       </section>
 
       <section v-if="crntOption.type == 'radio_button'" class="flexcontainer">
         <!-- <input type="text" v-for="radioB in crntRadios" v-model="radioB" /> -->
       </section>
-
       <!-- <section v-if="crntOption.option_values.length > 1" style="border:1px solid gray;">
         <transition-group name="fade" tag="div" v-dragula="optionElement.option_values" drake="optionElement.option_values">
             <div v-if="item.type=='swatch'" class="item" v-for="(item, index) in crntOption.option_values" :key="item.id">
@@ -114,12 +140,7 @@
       </section> -->
       <button @click="createOption()"> Create Color Option </button>
     </section>
-    
-    
     <pre v-if="optionShow" style="height:350px; overflow-y:scroll; font-size:9px; max-width: 450px;">{{options}}</pre>
-
-
-
     <section v-for="optionElement in options" :key="optionElement.id">
       <div style="font-weight:bold;">Possible Options, Option ID: {{optionElement.id}}, Product ID: {{optionElement.product_id}}</div>
       <transition-group name="fade" tag="div" v-dragula="optionElement.option_values" drake="optionElement.option_values">
@@ -166,16 +187,25 @@
   import Multiselect from 'vue-multiselect'
   import { Vue2Dragula } from 'vue2-dragula'
   import { uniqBy } from 'lodash'
+  import VueCoreImageUpload from 'vue-core-image-upload'
+  import fb from 'firebase'
+  import blobUtil from 'blob-util'
 
   export default {
     name: 'Create',
     components: {
       Multiselect: Multiselect,
+      'vue-core-image-upload': VueCoreImageUpload
     },
     beforeMount() {
     },
     data () {
       return {
+        initImg: 'data:image/webp;base64,UklGRioEAABXRUJQVlA4IB4EAADQHQCdASpkAGQAPm0wlUikIqGhJJJKSIANiWlWo5C3YgbZpf659QNPnb/M+eiAr7XYP+vft9+8dG7mf83j4Ye/4bV7iQ7knoyfLyBXszRktxgcflMB8EpTpH+4LjNDiHOyzadGUTKR1MZwqT+e7lvwxn92kyu7IEmjCaplm/HrPgT9tBFrLK3IXZiYApOWvf8wnR6oGIH/FKX0EAHibrvM1iWTWrTznD0vCu0zoglawzxyn52h7q6l20V6uLodbjimSL2lPa2KwU2CmYN2TuEBSR2LIKZ1AzWvvSk7+lJLJRmhteH82sHx7mo4Mbj//numEa7xgFiQAP79r0K9tirWKc4yCpLHh4P6TGeq1v1MeHIfSA8MocsY46PZ5VAA6iSlfBQeqhGlRLzJ5UI5sNyWnFr4/HH6LGjNRyoHmlPr8r7hP92RwqkiKgwcb9fCEPRXor0IKZA6b5xUfiO2c5RbgiiTIuaLxvhZ23uLTgXOs6THsbagSwG/Uo0Xb5jPROZkImPhKmUgZ/PdAhgu+FoAiBGG0xhhmO3FMP2N/7bkyIy85hjZIL85ULfqZS722CwzodM6fG+nwkMsvbZt74QavZ7MPrPi/IcISg0eVCQzIgysILWZPilrSZv+NdVYP5CUi1S9hdBRQ/XOcyDLCEeXInPueaf8WLjkojh13mqB+Kqg1NRjhFKqIr1Zad3mo5hw4imbUiquxwzQBhwZ/R2xal1OiKO8Y+49+zGAf6MoHruPgP/iBlZ8Uvh2sYmB4+6R1RLjxzVSD+syc432Ofuj6/blJ1qTv6nBls2SJmVmx0CqXVRxi8ZMC6tfuBoWu6kidiU4DG+1+k8uY4zoaCbfB4292CtB2fStv3vVNcLjF+cWCRsWBsidZtO0LtMmH3FgAIgQw0/G6RpLV5BEpJIg11AezakOXFW5Cn0vQ2/Wt1LOAZRSppn9IyveJVHO7aaUNwnJWvevawFQmnY2+9GJPxayD3dAutAvO5uI4n1O1RYwvK2UQWNVuvg7PwMWV+qXkIvsqMo5WrMhhrxcgmH+H1ftrMd6n5bsY7QY7lRpOtsWGqSHepcZ+9rTggG+4tOLbRvZETq4prywK/nwMATmS2Q31OViVATHAdH+aafkvNiPRipUKosxAH1FMdmyqLaTq05G6iT4aw/RQo/7NvAnIKZCUCe0/Nn/gxnvVJ1qfApF0PIsxA0xlE09ctXw1nntisacjjGGWZ+l3io2kbOo7iMT7YCq8GBtkmBFqYnZpDDGWv9OUnGTaHj54iidNSVyCcSqhcYdK165TFIfE356dK74D+MT1gHI7SsIlHh6kLami9PKe1mrMmJWrXj6kjqbDR0Y9BKmUELXPfdcIjut4n9EyhwVe9slJC2sBYxF7/M1T7XZguMnsAhCAAAA',
+        colorName: "",
+        myCroppa: null,
+        imgUrl: '',
+        src: 'http://img1.vued.vanthink.cn/vued0a233185b6027244f9d43e653227439a.png',
         variants: [],
         optionsLength: ['8"', '10s', '10"','12"', '14"', '16"', '18"'],
         optionTypes: [{value: 'swatch', label:'Color'}, {value:'radio_buttons', label:'Length'}],
@@ -192,8 +222,6 @@
         optionsColor: [
           "1", "BLACK", "1B", "2", "3", "4", "6", "8", "27", "30", "33", "34", "44", "51", "60", "130", "144", "280", "350", "530", "613", "99J", "NATURAL", "NATURAL/DK", "T33", "T530",
           "P1B/27", "P1B/30", "P1B/33", "P4/30","T1B/27",,"T1B/BG"
-
-
           // "M99J530", "M430", "M2730",
           // "PBBLBK", "PBCARAMEL", "PBCINNAMON", "PBCOFFEE", "PBDKGN", "PBDKPU",
           // "KM27", "KM30", "KM530",
@@ -275,6 +303,29 @@
       }
     },
     methods:{
+      uploadColorImage: function(){
+        var vm = this;
+        var storageRef = fb.storage().ref();
+        console.log("upload Color: ", storageRef)
+        var imagesRef = storageRef.child('bbl/color/'+ vm.colorName +'.jpg');
+        var img = document.getElementById('genImg');
+        blobUtil.imgSrcToBlob(img.src).then(function (blob) {
+          imagesRef.put(blob).then(function(snapshot) {
+            console.log('Uploaded a blob or file!');
+            var bblColors = fb.database().ref('bbl/colors')
+            bblColors.push({name: vm.colorName, imgSrc: snapshot.downloadURL })
+          });
+        }).catch(function (err) {
+        });
+      },
+      generateImage: function() {
+        let url = this.myCroppa.generateDataUrl()
+        if (!url) {
+          alert('no image')
+          return
+        }
+        this.imgUrl = url
+      },
       updateVariants: function(targetVariants) {
         var vm = this;
         console.log(targetVariants)
@@ -482,11 +533,11 @@
       createOption: function(){
         var vm = this
         let body =vm.crntOption
-        var baseURL = 'http://138.197.126.0:3000/api/'
+        var baseURL = 'http://192.241.138.85:3000/api/'
         //var baseURL = 'http://localhost:3000/api/'
         var instance = axios.create({
           baseURL: baseURL,
-          timeout: 10000,
+          timeout: 10000000,
           headers: {'Access-Control-Allow-Origin': '*'}
         })
         instance.request({
@@ -500,7 +551,7 @@
       
       deleteOptionById: function(prdId, optionId) {
         var vm = this;
-        var baseURL = 'http://138.197.126.0:3000/api/'
+        var baseURL = 'http://192.241.138.85:3000/api/'
         //var baseURL = 'http://localhost:3000/api/'
         var instance = axios.create({
           baseURL: baseURL,
@@ -586,11 +637,16 @@
       //$service.options('items', {direction: 'vertical'})
       //$service.eventBus.$on('drop', (args) => console.log(args)) //
       var vm = this;
-      var targetId = 10629 //14825
-      vm.productId = 10629; //14825
-      var baseURL = 'http://138.197.126.0:3000/api/'
+      var targetId = 15063 //14825
+      vm.productId = 15063; //14825
+      var baseURL = 'http://192.241.138.85:3000/api/'
       //var baseURL = 'http://localhost:3000/api/'
 
+
+      var bblColors = fb.database().ref('bbl/colors')
+      bblColors.on('value', function(snapshot) {
+        vm.optColors = snapshot.val();
+      });
       vm.instance = axios.create({
         baseURL: baseURL,
         timeout: 10000,
@@ -608,7 +664,7 @@
       vm.getVariantsByProductId(targetId).then(function(res){
         vm.variants = res.data.data;
         vm.variants = _.orderBy(vm.variants, ["sku"])
-        console.log(vm.variants)
+        // console.log(vm.variants)
       })
     }
   }

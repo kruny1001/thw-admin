@@ -110,7 +110,7 @@ export default {
         method: 'get',
         headers: { 'Content-Type':'application/json' },
         data:{
-          limit:200
+          limit:100
         },
         url: '/getListProductsByOrderID/'+orderId
       }).then(function(response) {
@@ -145,7 +145,7 @@ export default {
   created () {
     
     var vm = this;
-    var baseURL = 'http://138.197.126.0:3000/api';
+    var baseURL = 'http://192.241.138.85:3000/api';
     //var baseURL = 'http://localhost:3000/api';
 
     var instance = axios.create({
