@@ -4182,9 +4182,15 @@ map-obj@^1.0.0, map-obj@^1.0.1:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/map-obj/-/map-obj-1.0.1.tgz#d933ceb9205d82bdcf4886f6742bdc2b4dea146d"
 
+<<<<<<< HEAD
 "matchmedia-polyfill@https://github.com/paulirish/matchMedia.js.git":
   version "0.3.0"
   resolved "https://github.com/paulirish/matchMedia.js.git#b4060ba5ac7afa7f18bf9b2b55e3b8f18b0306f0"
+=======
+"matchmedia-polyfill@git+https://github.com/paulirish/matchMedia.js.git":
+  version "0.3.0"
+  resolved "git+https://github.com/paulirish/matchMedia.js.git#b4060ba5ac7afa7f18bf9b2b55e3b8f18b0306f0"
+>>>>>>> f1d66a12fc0a2a959de68c074c25058128f49d2f
 
 math-expression-evaluator@^1.2.14:
   version "1.2.17"
