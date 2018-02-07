@@ -32,3 +32,6 @@ npm test
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
 
 cat ~/.ssh/id_rsa_2.pub | ssh root@138.197.126.0 "cat >> ~/.ssh/authorized_keys"
+
+disable & enable 
+

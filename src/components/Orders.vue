@@ -1,38 +1,6 @@
 <template>
   <div class="container">
     <h3>Order List</h3>
-<!-- 
-    <div style="display:flex">
-      <div class="bc-buy-button natural-aloe" style="width:295px;height:435px">
-        <iframe
-          src="https://ad.buybutton.store/card/v1.1/0xh7j/15057/natural-aloe?action=checkout&open_in=popup&src=buy_button&btn_color=F7B733&price_color=4ABDAC&ga_id=null"
-          border="0"
-          scrolling="no"
-          horizontalscrolling="no"
-          verticalscrolling="no"
-          allowtransparency="true"
-          width="100%"
-          height="100%"
-          style="overflow: hidden; border: none; width=100%; height=100%;">
-        </iframe>
-      </div>
-
-      <div class="bc-buy-button Bohyme-229" style="width:295px;height:435px">
-        <iframe
-          src="https://ad.buybutton.store/card/v1.1/0xh7j/9350/Bohyme-229?action=checkout&open_in=popup&src=buy_button&ga_id=null"
-          border="0"
-          scrolling="no"
-          horizontalscrolling="no"
-          verticalscrolling="no"
-          allowtransparency="true"
-          width="100%"
-          height="100%"
-          style="overflow: hidden; border: none; width=100%; height=100%;">
-        </iframe>
-      </div>
-    </div>
-     -->
-
     <button @click="getAllPrds()"> Get All Products</button>
      <line-chart
       :chart-data="lineData"
@@ -40,8 +8,9 @@
       :height="200"
       :width="100">
     </line-chart>
-    <table>
-      <tr>
+
+    <!-- <table>
+      <tr class="f7">
         <th>Order ID</th>
         <th>Customer ID</th>
         <th>Total Revenue</th>
@@ -49,38 +18,78 @@
         <th>Payment Method </th>
         <th>Date Created </th>
         <th>Products</th>
+        <th> IP </th>
+        <th> Card Type </th>
+        <th> Card ID </th>
       </tr>
-      <tbody v-for="ord in orders">
-        <tr >
-          <td><span>{{ord.id}}</span></td>
-          <td><span>{{ord.customer_id}}</span></td>
-          <td><span style="color:#337ab7">{{Number(ord.total_inc_tax)}}</span></td>
-          <td><span>{{ord.status}}</span></td>
-          <td><span>{{ord.payment_method}}</span></td>
-          <td><span>{{ord.date_created}}</span></td>
+      <tbody v-for="(ord, idx) in orders" :key="idx">
+        <tr class="b bg-light-green" >
+          <td><span class="f7">{{ord.id}}</span></td>
+          <td><span class="f7">{{ord.customer_id}}</span></td>
+          <td><span class="f7" style="color:#337ab7">{{Number(ord.total_inc_tax)}}</span></td>
+          <td><span style="font-size:8px">{{ord.status}}</span></td>
+          <td><span class="f7">{{ord.payment_method}}</span></td>
+          <td><span style="font-size:8px">{{ord.date_created}}</span></td>
           <td><button @click="getListProductsByOrderID(ord, ord.id)"> Products</button></td>
+          <td style="font-size:8px"> {{ord.ip_address}}</td>
+          <td> {{ord.credit_card_type}}</td>
+          <td style="font-size:8px"> {{ord.cart_id}}</td>
         </tr>
         
+        <tr class="b bg-light-green" >
           <div>
-            <div v-for="prd in ord.custPrds">
-              <div style="font-weight:bold font-size:10px;">{{prd.name}}</div> 
+            <div class="pa3" v-for="(prd, idx) in ord.custPrds" :key="idx">
+              <div class="f6 b">[{{prd.product_id}}] {{prd.name}} - {{prd.weight}}</div>
               <section style="margin-left:12px;">
-                <div style="font-size:9px;">{{prd.base_price}} X {{prd.quantity}} = {{prd.base_total}}</div>
-              <div style="font-size:9px;" v-for="opt in prd.product_options">{{opt.display_name}}: {{opt.display_value}} </div>
+                <div class="f7">{{prd.base_price}} X {{prd.quantity}} = {{prd.base_total}}</div>
+              <div class="f7" v-for="(opt, idx) in prd.product_options" :key="idx">{{opt.display_name}}: {{opt.display_value}} </div>
               </section>
             </div>
           </div>
-        
+        </tr>
       </tbody>
-    </table>
+    </table> -->
 
-    <div v-for="ord in orders"> 
-      <pre> {{ord.custPrds}}</pre>
-      <div v-for="prd in ord.custPrds">
-        <div>{{prd.name}}</div> 
-        <div>{{prd.base_price}} X {{prd.quantity}} = {{prd.base_total}}</div>
-        <div style="margin-left:12px;" v-for="opt in prd.product_options">{{opt.display_name}}: {{opt.display_value}} </div>
+    <div class="">
+      <div class="grid-container f7 b center">
+        <div>Order ID</div>
+        <div>Customer ID</div>
+        <div>Revenue</div>
+        <div>Status</div>
+        <div>Payment Medivod </div>
+        <div>Date Created </div>
+        <div>Products</div>
+        <div> IP </div>
+        <div> Card Type </div>
+        <div> Card ID </div>
       </div>
+
+      <section v-for="(ord, idx) in orders" :key="idx">
+        <div class="grid-container b bg-light-green" >
+          <div><span class="f7">{{ord.id}}</span></div>
+          <div><span class="f7">{{ord.customer_id}}</span></div>
+          <div><span class="f7" style="color:#337ab7">{{Number(ord.total_inc_tax)}}</span></div>
+          <div><span style="font-size:8px">{{ord.status}}</span></div>
+          <div><span class="f7">{{ord.payment_method}}</span></div>
+          <div><span style="font-size:8px">{{ord.date_created}}</span></div>
+          <div><button @click="getListProductsByOrderID(ord, ord.id)"> Products</button></div>
+          <div style="font-size:8px"> {{ord.ip_address}}</div>
+          <div class="f7"> {{ord.credit_card_type}}</div>
+          <div style="font-size:8px"> {{ord.cart_id}}</div>
+        </div>
+        
+        <div class="b bg-light-green" >
+          <div>
+            <div class="pa3" v-for="(prd, idx) in ord.custPrds" :key="idx">
+              <div class="f6 b">[{{prd.product_id}}] {{prd.name}} - {{prd.weight}}</div>
+              <section style="margin-left:12px;">
+                <div class="f7">{{prd.base_price}} X {{prd.quantity}} = {{prd.base_total}}</div>
+              <div class="f7" v-for="(opt, idx) in prd.product_options" :key="idx">{{opt.display_name}}: {{opt.display_value}} </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </template>
@@ -92,7 +101,7 @@ import LineChart from '@/components/LineChart'
 import { findIndex, filter } from 'lodash'
 
 export default {
-  name: 'brands',  
+  name: 'brands',
   components:{
      'line-chart': LineChart
   },
@@ -104,13 +113,14 @@ export default {
     }
   },
   methods: {
+
     getListProductsByOrderID : function (ord, orderId) {
       var vm = this;
       return vm.instance.request({
         method: 'get',
         headers: { 'Content-Type':'application/json' },
         data:{
-          limit:200
+          limit:20
         },
         url: '/getListProductsByOrderID/'+orderId
       }).then(function(response) {
@@ -119,35 +129,29 @@ export default {
         return(response)
       }).catch(function (error) {
         if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
           console.log(error.response.data);
           console.log(error.response.status);
           console.log(error.response.headers);
         } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.js
           console.log(error.request);
         } else {
-          // Something happened in setting up the request that triggered an Error
           console.log('Error', error.message);
         } console.log(error.config)})
     },
+
     getAllPrds: function(ord){
       var vm = this;
       vm.orders.forEach(ord => {
         vm.getListProductsByOrderID(ord, ord.id)
       })
-
     }
+
   },
   created () {
-    
-    var vm = this;
-    var baseURL = 'http://138.197.126.0:3000/api';
-    //var baseURL = 'http://localhost:3000/api';
 
+    var vm = this;
+    // var baseURL = 'http://138.197.126.0:3000/api';
+    var baseURL = 'http://localhost:3000/api';
     var instance = axios.create({
       baseURL: baseURL,
       timeout: 10000,
@@ -157,6 +161,7 @@ export default {
         'Content-Type':'application/json'
       }
     })
+    
     vm.instance = instance
 
     var getOrderList = function () {
@@ -166,36 +171,26 @@ export default {
         data:{
           max_date_created:new Date().toISOString(),
           sort:"date_created:desc",
-          limit: 100
+          limit: 200
         },
         url: '/listOrders'
       }).then(function(response) {
         return(response)
       }).catch(function (error) {
         if (error.response) {
-          // The request was made and the server responded with a status code
-          // that falls out of the range of 2xx
           console.log(error.response.data);
           console.log(error.response.status);
           console.log(error.response.headers);
         } else if (error.request) {
-          // The request was made but no response was received
-          // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
-          // http.ClientRequest in node.jsnp
           console.log(error.request);
         } else {
-          // Something happened in setting up the request that triggered an Error
           console.log('Error', error.message);
         } console.log(error.config)})
     }
-    // axios.request({
-    //     method:'GET',
-    //     url: 'http://127.0.0.1:8000/orders',
-    //     headers: {'Access-Control-Allow-Origin': '*'}
-    //     }).then(result => console.log(result))
+
     getOrderList().then( function(res) {
       vm.orders = res.data;
-      vm.orders = filter(vm.orders, order => { return order.status != "Incomplete"})
+      //vm.orders = filter(vm.orders, order => { return order.status != "Incomplete"})
       var total = vm.orders.map( x => Number(x.total_inc_tax))
       var ids = vm.orders.map(   x => x.id.toString())
       Promise.all([total, ids]).then( function(result) {
@@ -215,11 +210,20 @@ export default {
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style>
+<style scoped>
   td {
     margin-left:3px; margin-right:3px; padding:3px;
   }
+
   .container {
     text-align: left; padding: 10px;
+  }
+
+  .grid-container{
+    display: grid; 
+    grid-template-columns: 80px 80px 80px 140px 120px 80px 80px 80px 80px 230px;
+    grid-template-rows: 25%;
+    grid-column-gap: 10px;
+    grid-row-gap: 15px;
   }
 </style>

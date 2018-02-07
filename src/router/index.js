@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Hello from '@/components/Hello'
 import Products from '@/components/Products'
+import FindItems from '@/components/FindItems'
 import Category from '@/components/Category'
 import CategoryById from '@/components/CategoryById'
 import ProductById from '@/components/ProductById'
@@ -11,6 +12,10 @@ import Search from '@/components/Search'
 import CreateProduct from '@/components/CreateProduct'
 import Color from '@/components/Color'
 import AddColor from '@/components/AddColor'
+import ProductTables from '@/components/ProductTable'
+import Update from '@/components/Update'
+import Social from '@/components/Social'
+import Diag from '@/components/Diag'
 
 Vue.use(Router)
 
@@ -22,9 +27,19 @@ export default new Router({
       component: Hello
     },
     {
+      path: '/diag',
+      name: 'Diag',
+      component: Diag
+    },
+    {
       path: '/products',
       name: 'Products',
       component: Products
+    },
+    {
+      path: '/find',
+      name: 'FindItems',
+      component: FindItems
     },
     {
       path: '/products/:id',
@@ -67,6 +82,11 @@ export default new Router({
       component: CreateProduct
     },
     {
+      path: '/update/:id',
+      name: 'Update',
+      component: Update
+    },
+    {
       path: '/color',
       name: 'Color',
       component: Color
@@ -75,6 +95,17 @@ export default new Router({
       path: '/colorEdit',
       name: 'AddColor',
       component: AddColor
+    },
+    {
+      path: '/prds',
+      name: 'ProductTables',
+      component: ProductTables
+    },
+    {
+      path: '/social',
+      name: 'Social',
+      component: Social
     }
+
   ]
 })
